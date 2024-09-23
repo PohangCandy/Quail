@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Utils.h"
+#include <iostream>
+#include <vector>
 
 class Canvas;
 
@@ -11,10 +13,11 @@ class GameObject {
 	bool	alive;
 
 	Direction	direction;
-
+	
 protected:
 
 	static GameObject** Objects;
+	static vector<GameObject*> Objects;
 	static int MaxAllocSize;
 
 	GameObject** children;
@@ -22,6 +25,7 @@ protected:
 
 	void addChild(GameObject* child)
 	{
+
 		for (int i = 0; i < maxChildren; i++)
 		{
 			if (children[i] != nullptr) continue;

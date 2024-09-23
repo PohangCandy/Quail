@@ -1,18 +1,2 @@
-﻿  Bullet.cpp
-  Canvas.cpp
-  Enemy.cpp
-  GameObject.cpp
-  Iterator.cpp
-  Player.cpp
-  TextUI.cpp
-  Utils.cpp
-  코드를 생성하고 있습니다...
-Canvas.obj : error LNK2005: "bool __cdecl isOverlap(int,int,int,int)" (?isOverlap@@YA_NHHHH@Z)이(가) Bullet.obj에 이미 정의되어 있습니다.
-Enemy.obj : error LNK2005: "bool __cdecl isOverlap(int,int,int,int)" (?isOverlap@@YA_NHHHH@Z)이(가) Bullet.obj에 이미 정의되어 있습니다.
-GameObject.obj : error LNK2005: "bool __cdecl isOverlap(int,int,int,int)" (?isOverlap@@YA_NHHHH@Z)이(가) Bullet.obj에 이미 정의되어 있습니다.
-Iterator.obj : error LNK2005: "bool __cdecl isOverlap(int,int,int,int)" (?isOverlap@@YA_NHHHH@Z)이(가) Bullet.obj에 이미 정의되어 있습니다.
-OOP2.obj : error LNK2005: "bool __cdecl isOverlap(int,int,int,int)" (?isOverlap@@YA_NHHHH@Z)이(가) Bullet.obj에 이미 정의되어 있습니다.
-Player.obj : error LNK2005: "bool __cdecl isOverlap(int,int,int,int)" (?isOverlap@@YA_NHHHH@Z)이(가) Bullet.obj에 이미 정의되어 있습니다.
-TextUI.obj : error LNK2005: "bool __cdecl isOverlap(int,int,int,int)" (?isOverlap@@YA_NHHHH@Z)이(가) Bullet.obj에 이미 정의되어 있습니다.
-Utils.obj : error LNK2005: "bool __cdecl isOverlap(int,int,int,int)" (?isOverlap@@YA_NHHHH@Z)이(가) Bullet.obj에 이미 정의되어 있습니다.
-D:\객체2\OOP2\x64\Debug\OOP2.exe : fatal error LNK1169: 여러 번 정의된 기호가 있습니다.
+﻿  OOP2.cpp
+  OOP2.vcxproj -> C:\Users\19\Desktop\c++\Quail\x64\Debug\OOP2.exe

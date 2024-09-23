@@ -3,6 +3,8 @@
 #include <conio.h>
 #include <cstring>
 #include <windows.h>
+#include <iostream>
+#include <vector>
 
 #include "Canvas.h"
 #include "GameObject.h"
@@ -11,6 +13,10 @@
 #include "Bullet.h"
 #include "TextUI.h"
 
+
+using namespace std;
+
+
 int main()
 {
 	Canvas	canvas;
@@ -18,6 +24,18 @@ int main()
 	GameObject::Init(&canvas, 30);
 
 	bool exit_flag{ false };
+
+	vector<int> vec;
+
+	for (int i = 0; i < 10; i++)
+	{
+		vec.push_back(i);
+	}
+
+	for (auto it = vec.cbegin(); it != vec.cend(); it++)
+	{
+		cout << *it << " ";
+	}
 
 	while (exit_flag == false) { // if player is alive
 
