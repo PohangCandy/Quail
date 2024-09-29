@@ -1,46 +1,9 @@
 #include "Bullet.h"
-#include "Canvas.h"
 #include "IDamageable.h"
-#include "Iterator.h"
+#include "Canvas.h"
 
-Bullet::Bullet(bool penetrable) : GameObject(nullptr, 0), penetrable(penetrable)
-{
-	setDirection(Direction::None);
-}
 
-void Bullet::init(const GameObject* from, const GameObject* to)
-{
-	int from_start, from_end;
-	int to_start, to_end;
-
-	from->getStartEndPositions(&from_start, &from_end);
-	Direction heading = (Direction)(1 + rand() % 2);
-	if (to != nullptr) {
-		to->getStartEndPositions(&to_start, &to_end);
-		if (from_start <= to_start)
-			heading = Direction::Right;
-		else heading = Direction::Left;
-	}
-	init(from, heading);
-}
-
-void Bullet::init(const GameObject* from, Direction heading)
-{
-	int from_start, from_end;
-
-	from->getStartEndPositions(&from_start, &from_end);
-	setDirection(heading);
-	if (heading == Direction::Right) {
-		setPos(from_end);
-		setShape("-->");
-	}
-	else if (heading == Direction::Left) {
-		setPos(from_start - (int)strlen("<--"));
-		setShape("<--");
-	}
-}
-
-void Bullet::update(const Canvas* canvas)
+void Bullet::update() 
 {
 	if (canvas->isOutOfScreen(getPos(), getShapeSize())) {
 		setDead();
@@ -81,7 +44,8 @@ void Bullet::update(const Canvas* canvas)
 	else move(1);
 }
 
-bool Bullet::isOutOfScreen(const Canvas* canvas) const
+
+bool Bullet::isOutOfScreen() const
 {
 	return canvas->isOutOfScreen(getPos(), getShapeSize());
 }

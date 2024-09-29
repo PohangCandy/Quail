@@ -1,31 +1,39 @@
 #pragma once
 
 #include "Utils.h"
-#include <iostream>
+#include "Canvas.h"
 #include <vector>
 
 class Canvas;
 
+using namespace std;
+
 class GameObject {
 
+	Canvas* canvas;
 	char* shape;
 	int		pos;
 	bool	alive;
 
 	Direction	direction;
-	
+
 protected:
 
-	static GameObject** Objects;
+	Canvas* GetCanvas()
+	{
+		return canvas;
+	}
+
+	//static GameObject** Objects;
 	static vector<GameObject*> Objects;
 	static int MaxAllocSize;
 
-	GameObject** children;
+	//GameObject** children;
+	vector<GameObject*> children;
 	int	  maxChildren;
 
 	void addChild(GameObject* child)
 	{
-
 		for (int i = 0; i < maxChildren; i++)
 		{
 			if (children[i] != nullptr) continue;
@@ -34,29 +42,29 @@ protected:
 		}
 	}
 
-	void internalUpdate(const Canvas* canvas)
+	void internalUpdate()
 	{
 		if (isAlive() == false) return;
-		update(canvas);
+		update();
 		for (int i = 0; i < maxChildren && isAlive() == true; i++) {
 			if (children[i] == nullptr) continue;
-			children[i]->internalUpdate(canvas);
+			children[i]->internalUpdate();
 		}
 	}
 
-	void internalDraw(Canvas* canvas) const
+	void internalDraw() const
 	{
 		if (isAlive() == false) return;
-		draw(canvas);
+		draw();
 		for (int i = 0; i < maxChildren && isAlive() == true; i++) {
 			if (children[i] == nullptr) continue;
-			children[i]->draw(canvas);
+			children[i]->draw();
 		}
 	}
 
 public:
 
-	static void Init(const Canvas* canvas, int size);
+	static void Init(int size);
 	static void Destroy();
 	static void Add(GameObject* obj);
 	static void Remove(GameObject* obj);
@@ -64,11 +72,20 @@ public:
 	static bool Contains(GameObject* obj);
 	static GameObject* FindClosestTarget(const GameObject* source, const char* target_tag);
 
-	static void Draw(Canvas* canvas);
-	static void Update(const Canvas* canvas);
-	static void ProcessInput(int key, const Canvas* canvas);
+	static void Draw();
+	static void Update();
+	static void ProcessInput(int key);
 
-	GameObject(const char* str, int pos);
+	GameObject(const char* str, int pos)
+		: canvas(Canvas::GetInstance()),		
+		shape(nullptr), pos(pos), alive(true), direction(Direction::None),
+		maxChildren(10)
+	{
+		for (int i = 0; i < maxChildren; i++)
+			children.push_back(nullptr);
+
+		setShape(str);
+	}
 
 	virtual ~GameObject()
 	{
@@ -76,7 +93,7 @@ public:
 			if (children[i] == nullptr) continue;
 			delete children[i];
 		}
-		delete[] children;
+		children.clear();
 
 		if (this->shape != nullptr)
 			delete[] this->shape;
@@ -137,10 +154,12 @@ public:
 		return ::isOverlap(start, end, target_start, target_end); // calling global function
 	}
 
-	virtual void draw(Canvas* canvas) const;
+	virtual void draw() const;
 
-	virtual void update(const Canvas* canvas) {}
+	virtual void update() {};
 
-	virtual void processInput(int key, const Canvas* canvas) {}
+	virtual void processInput(int key) {}
 };
+
+
 

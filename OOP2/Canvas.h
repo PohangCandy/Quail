@@ -4,16 +4,27 @@
 
 class GameObject;
 
+
 class Canvas {
 	int		size;
 	char* screen;
 	int		frame_rate;
 	int		n_frames;
 
-public:
+
+	static Canvas* Instance;
+
+
 	Canvas(int size = 80, int frame_rate = 30)
 		: size(size), screen(new char[(size_t)size + 1]), frame_rate(frame_rate), n_frames(0)
 	{}
+
+public:
+
+
+	static Canvas* GetInstance();
+	
+	
 
 	~Canvas()
 	{
@@ -26,7 +37,8 @@ public:
 		screen[size] = '\0';
 	}
 
-	void draw(const GameObject* obj);
+	void draw(const GameObject* obj);	
+
 
 	void draw(const char* shape, int pos)
 	{

@@ -1,11 +1,15 @@
 #pragma once
 #include "GameObject.h"
 #include "IDamageable.h"
+#include "Iterator.h"
+
+class TextUI;
 
 class Canvas;
 
 class Player : public GameObject, public IDamageable {
 
+	Canvas* canvas;
 	float	hp;
 	int		blink_period;
 
@@ -24,17 +28,25 @@ public:
 		return getHealth();
 	}
 
-	void draw(Canvas* canvas) const override;
+	void draw() const override
+	{
+		if (blink_period >= 0
+			&& canvas->getCurrentFrameNumber() % blink_period == 0)
+			return;
+
+		GameObject::draw();
+	}
 
 	void move(int inc)
 	{
 		setPos(getPos() + inc);
 	}
 
-	void fireBullet(const Canvas* canvas);
+	void fireBullet();
 
-	void update(const Canvas* canvas) override;
+	void update() override;
 
-	void processInput(int key, const Canvas* canvas) override;
+	void processInput(int key) override;
 };
+
 

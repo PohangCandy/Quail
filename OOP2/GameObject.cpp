@@ -1,30 +1,38 @@
 #include "GameObject.h"
 #include "Canvas.h"
-#include "Iterator.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "Iterator.h"
 
-GameObject** GameObject::Objects = nullptr;
+vector<GameObject*> GameObject::Objects;
 int GameObject::MaxAllocSize = 0;
 
-GameObject::GameObject(const char* str, int pos)
-	: shape(nullptr), pos(pos), alive(true), direction(Direction::None),
-	maxChildren(10), children(new GameObject* [10])
-{
-	setShape(str);
-
-	for (int i = 0; i < maxChildren; i++)
-		children[i] = nullptr;
+void GameObject::draw() const {
+	if (canvas == nullptr) return;
+	canvas->draw(this);
+	switch (direction) {
+	case Direction::Left:
+		canvas->draw("<", getStartPosition());
+		break;
+	case Direction::Right:
+		canvas->draw(">", getEndPosition() - 1);
+		break;
+	}
 }
 
-void GameObject::Init(const Canvas* canvas, int size = 10)
+
+
+void GameObject::Init(int size = 10)
 {
-	Objects = new GameObject * [size];
+	Canvas* canvas = Canvas::GetInstance();
+	Objects.resize(size);
 	MaxAllocSize = size;
 
 	for (int i = 0; i < MaxAllocSize; i++)
 		Objects[i] = nullptr;
 
+
+	
 	Add(new Player{ "(^_^)", 0, 10000.0f });
 	Add(new Enemy{ "(+*_*)", 20, 50.0f, 10.0f / canvas->getFrameRate() });
 	Add(new Enemy{ "(+*_*+)", 60, 50.0f, 10.0f / canvas->getFrameRate() });
@@ -39,20 +47,34 @@ void GameObject::Destroy()
 		delete Objects[i];
 		Objects[i] = nullptr;
 	}
-	delete[] Objects;
+	Objects.clear();
 }
 
 void GameObject::Add(GameObject* obj)
 {
 	if (obj == nullptr) return;
 
+	//for (int i = 0; i < MaxAllocSize; i++)
+	//{
+	//	if (Objects[i] != nullptr) continue;
+
+	//	Objects[i] = obj;
+	//	//Objects.push_back(obj);
+	//	return;
+	//}
+
+	// MaxAllocSize를 벗어나지 않도록 확인
 	for (int i = 0; i < MaxAllocSize; i++)
 	{
-		if (Objects[i] != nullptr) continue;
-
-		Objects[i] = obj;
-		return;
+		// 빈 공간이 있는지 체크
+		if (i < Objects.size() && Objects[i] == nullptr) {
+			Objects[i] = obj; // 빈 공간에 객체 추가
+			return;
+		}
 	}
+
+	// 모든 공간이 가득 차 있다면 push_back을 사용하여 추가
+	Objects.push_back(obj);
 }
 
 void GameObject::Remove(GameObject* obj)
@@ -84,21 +106,21 @@ bool GameObject::Contains(GameObject* obj)
 	return false;
 }
 
-void GameObject::Draw(Canvas* canvas)
+void GameObject::Draw()
 {
 	Iterator it(Objects, MaxAllocSize);
 	GameObject* obj = nullptr;
 	while ((obj = it.getNext()) != it.end()) {
-		obj->internalDraw(canvas);
+		obj->internalDraw();
 	}
 }
 
-void GameObject::Update(const Canvas* canvas)
+void GameObject::Update()
 {
 	Iterator it(Objects, MaxAllocSize);
 	GameObject* obj = nullptr;
 	while ((obj = it.getNext()) != it.end()) {
-		obj->internalUpdate(canvas);
+		obj->internalUpdate();
 	}
 
 	// remove dying objects
@@ -113,12 +135,12 @@ void GameObject::Update(const Canvas* canvas)
 	}
 }
 
-void GameObject::ProcessInput(int ch, const Canvas* canvas)
+void GameObject::ProcessInput(int ch)
 {
 	Iterator it(Objects, MaxAllocSize);
 	GameObject* obj = nullptr;
 	while ((obj = it.getNext()) != it.end()) {
-		obj->processInput(ch, canvas);
+		obj->processInput(ch);
 	}
 }
 
@@ -150,15 +172,3 @@ GameObject* GameObject::FindClosestTarget(const GameObject* source, const char* 
 	return closest;
 }
 
-void GameObject::draw(Canvas* canvas) const {
-	if (canvas == nullptr) return;
-	canvas->draw(this);
-	switch (direction) {
-	case Direction::Left:
-		canvas->draw("<", getStartPosition());
-		break;
-	case Direction::Right:
-		canvas->draw(">", getEndPosition() - 1);
-		break;
-	}
-}

@@ -2,10 +2,10 @@
 #include "GameObject.h"
 
 GameObject* Iterator::getNext() {
-	while (++current < maxCapacity && (container[current] == nullptr || container[current]->isAlive() == false)) {
+	while (++current < container.size() && (container[current] == nullptr || container[current]->isAlive() == false)) {
 		// move next
 		;
 	}
-	if (current >= maxCapacity) return end();
+	if (current >= container.size()) return end();
 	return container[current];
 }

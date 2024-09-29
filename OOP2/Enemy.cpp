@@ -1,12 +1,12 @@
 #include "Enemy.h"
-#include "Iterator.h"
+#include "Bullet.h"
+#include "Canvas.h"
 #include "Player.h"
 #include "TextUI.h"
 #include "Canvas.h"
-#include "Bullet.h"
 
 Enemy::Enemy(const char* shape, int pos, float hp, float dpf)
-	: GameObject(shape, pos), hp(hp), dpf(dpf), nRemainingFire(rand() % 30)
+	: GameObject(shape, pos), hp(hp), dpf(dpf), nRemainingFire(rand() % 30), canvas(GetCanvas())
 {
 	addChild(new TextUI(this));
 }
@@ -22,7 +22,8 @@ GameObject* Enemy::findPlayer()
 	return nullptr;
 }
 
-void Enemy::update(const Canvas* canvas)
+
+void Enemy::update()
 {
 	// check whether it is time to attack.
 	if (nRemainingFire > 0) {

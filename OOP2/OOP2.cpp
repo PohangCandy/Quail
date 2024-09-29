@@ -1,4 +1,7 @@
-﻿#include <stdio.h>
+﻿// OOP2.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
+//
+
+#include <stdio.h>
 #include <stdlib.h> // itoa
 #include <conio.h>
 #include <cstring>
@@ -6,6 +9,7 @@
 #include <iostream>
 #include <vector>
 
+#include "Utils.h"
 #include "Canvas.h"
 #include "GameObject.h"
 #include "Player.h"
@@ -16,37 +20,27 @@
 
 using namespace std;
 
-
 int main()
 {
-	Canvas	canvas;
+	GameObject::Init(30);
 
-	GameObject::Init(&canvas, 30);
+	Canvas* canvas = Canvas::GetInstance();
 
 	bool exit_flag{ false };
 
-	vector<int> vec;
-
-	for (int i = 0; i < 10; i++)
-	{
-		vec.push_back(i);
-	}
-
-	for (auto it = vec.cbegin(); it != vec.cend(); it++)
-	{
-		cout << *it << " ";
-	}
 
 	while (exit_flag == false) { // if player is alive
 
-		canvas.clear();
+		// GameObject에서 init으로 만든 
+		// canvas의 clear매서드를 어떻게 호출할까
+		canvas->clear();
 
 		/* process game logic for each game object */
-		GameObject::Update(&canvas);
-		canvas.update();
+		GameObject::Update();
+		canvas->update();
 
 		/* draw game objects */
-		GameObject::Draw(&canvas);
+		GameObject::Draw();
 
 		/* process input event. */
 		if (_kbhit()) {
@@ -57,21 +51,22 @@ int main()
 				exit_flag = true;
 				break;
 			case 'n':
-				GameObject::Add(new Player{ "(^_^)", rand() % canvas.getScreenSize(), 50.0f });
+				GameObject::Add(new Player{ "(^_^)", rand() % canvas->getScreenSize(), 50.0f });
 				break;
 			case 'e':
-				GameObject::Add(new Enemy{ "(+*_*)", rand() % canvas.getScreenSize(), 50.0f, 10.0f / canvas.getFrameRate() });
+				GameObject::Add(new Enemy{ "(+*_*)", rand() % canvas->getScreenSize(), 50.0f, 10.0f / canvas->getFrameRate() });
 				break;
 			default:
-				GameObject::ProcessInput(ch, &canvas);
+				GameObject::ProcessInput(ch);
 				break;
 			}
 		}
-		canvas.render();
+		canvas->render();
 
 	} /* end of while(1) */
 
 	GameObject::Destroy();
+
 
 	return 0;
 }

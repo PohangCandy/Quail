@@ -1,26 +1,15 @@
+#include "Canvas.h"
 #include "Player.h"
 #include "TextUI.h"
-#include "Canvas.h"
-#include "Iterator.h"
 #include "Bullet.h"
 
 Player::Player(const char* shape, int pos, float hp)
-	: GameObject(shape, pos), hp(hp), blink_period(-1)
+	: GameObject(shape, pos), hp(hp), blink_period(-1),canvas(GetCanvas())
 {
 	addChild(new TextUI(this));
 }
 
-
-void Player::draw(Canvas* canvas) const
-{
-	if (blink_period >= 0
-		&& canvas->getCurrentFrameNumber() % blink_period == 0)
-		return;
-
-	GameObject::draw(canvas);
-}
-
-void Player::update(const Canvas* canvas)
+void Player::update()
 {
 	Iterator it(GameObject::Objects, GameObject::MaxAllocSize);
 	GameObject* obj = nullptr;
@@ -45,7 +34,7 @@ void Player::update(const Canvas* canvas)
 	}
 }
 
-void Player::fireBullet(const Canvas* canvas)
+void Player::fireBullet()
 {
 	if (canvas == nullptr) return;
 
@@ -67,7 +56,7 @@ void Player::fireBullet(const Canvas* canvas)
 	}
 }
 
-void Player::processInput(int key, const Canvas* canvas) {
+void Player::processInput(int key) {
 	switch (key) {
 	case 'a':
 		if (getDirection() == Direction::Left) move(-4);
@@ -78,7 +67,7 @@ void Player::processInput(int key, const Canvas* canvas) {
 		else setDirection(Direction::Right);
 		break;
 	case ' ':
-		fireBullet(canvas);
+		fireBullet();
 		break;
 	}
 }

@@ -1,6 +1,11 @@
 #pragma once
 #include "GameObject.h"
 #include "IDamageable.h"
+#include "Iterator.h"
+
+class Player;
+class TextUI;
+class Canvas;
 
 class Enemy : public GameObject, public IDamageable {
 	float	hp;
@@ -8,10 +13,11 @@ class Enemy : public GameObject, public IDamageable {
 
 	int		nRemainingFire;
 
+	Canvas* canvas;
+
 	// enemy-related functions
 
 	GameObject* findPlayer();
-
 
 public:
 
@@ -36,7 +42,7 @@ public:
 		}
 	}
 
-	void update(const Canvas* canvas) override;
+	void update() override;
 
 	float getHealth() const override { return hp; }
 
@@ -46,7 +52,7 @@ public:
 		return getHealth();
 	}
 
-	void processInput(int key, const Canvas* canvas) override {
+	void processInput(int key) override {
 		if (key == 'j') {
 			move(-1);
 		}
@@ -55,4 +61,5 @@ public:
 		}
 	}
 };
+
 
