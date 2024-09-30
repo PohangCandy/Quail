@@ -11,9 +11,7 @@ Player::Player(const char* shape, int pos, float hp)
 
 void Player::update()
 {
-	Iterator it(GameObject::Objects, GameObject::MaxAllocSize);
-	GameObject* obj = nullptr;
-	while ((obj = it.getNext()) != it.end()) {
+	for(auto obj:Objects) {
 
 		// be careful the following is not obj->isAlive() == false
 

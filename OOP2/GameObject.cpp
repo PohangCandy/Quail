@@ -5,7 +5,15 @@
 #include "Iterator.h"
 
 vector<GameObject*> GameObject::Objects;
+vector<GameObject*> GameObject::PendingObjects;
 int GameObject::MaxAllocSize = 0;
+
+GameObject::GameObject(const char* str, int pos)
+	: canvas(Canvas::GetInstance()),
+	shape(nullptr), pos(pos), alive(true), direction(Direction::None)	
+{
+	setShape(str);
+}
 
 void GameObject::draw() const {
 	if (canvas == nullptr) return;
@@ -25,13 +33,6 @@ void GameObject::draw() const {
 void GameObject::Init(int size = 10)
 {
 	Canvas* canvas = Canvas::GetInstance();
-	Objects.resize(size);
-	MaxAllocSize = size;
-
-	for (int i = 0; i < MaxAllocSize; i++)
-		Objects[i] = nullptr;
-
-
 	
 	Add(new Player{ "(^_^)", 0, 10000.0f });
 	Add(new Enemy{ "(+*_*)", 20, 50.0f, 10.0f / canvas->getFrameRate() });
@@ -40,13 +41,13 @@ void GameObject::Init(int size = 10)
 
 void GameObject::Destroy()
 {
-	for (int i = 0; i < MaxAllocSize; i++)
+	while (Objects.empty() == false)
 	{
-		if (Objects[i] == nullptr) continue;
-
-		delete Objects[i];
-		Objects[i] = nullptr;
+		auto back = Objects.back();
+		Objects.pop_back();
+		delete back;
 	}
+
 	Objects.clear();
 }
 
@@ -54,26 +55,10 @@ void GameObject::Add(GameObject* obj)
 {
 	if (obj == nullptr) return;
 
-	//for (int i = 0; i < MaxAllocSize; i++)
-	//{
-	//	if (Objects[i] != nullptr) continue;
+	// 중복된 요소 제거하기
+	auto it = find(Objects.begin(), Objects.end(), obj);
+	if (it != Objects.end()) return;
 
-	//	Objects[i] = obj;
-	//	//Objects.push_back(obj);
-	//	return;
-	//}
-
-	// MaxAllocSize를 벗어나지 않도록 확인
-	for (int i = 0; i < MaxAllocSize; i++)
-	{
-		// 빈 공간이 있는지 체크
-		if (i < Objects.size() && Objects[i] == nullptr) {
-			Objects[i] = obj; // 빈 공간에 객체 추가
-			return;
-		}
-	}
-
-	// 모든 공간이 가득 차 있다면 push_back을 사용하여 추가
 	Objects.push_back(obj);
 }
 
@@ -81,67 +66,65 @@ void GameObject::Remove(GameObject* obj)
 {
 	if (obj == nullptr) return;
 
-	for (int i = 0; i < MaxAllocSize; i++)
-	{
-		if (Objects[i] != obj) continue;
+	auto it = find(Objects.begin(), Objects.end(), obj);
+	if (it == Objects.end()) return;
 
-		// Objects[i] == obj
-		delete Objects[i];
-		Objects[i] = nullptr;
-		return;
-	}
+	auto target = *it;
+	Objects.erase(it);
+	// erase는 포인터 정보만 날려주는 것이다.
+	//동적해제는 사용자가 해주어야 한다.
+	delete target;
 }
 
 bool GameObject::HasAnEmptySlot()
 {
-	for (int i = 0; i < MaxAllocSize; i++)
-		if (Objects[i] == nullptr) return true;
-	return false;
+	return true;
 }
 
 bool GameObject::Contains(GameObject* obj)
 {
-	for (int i = 0; i < MaxAllocSize; i++)
-		if (obj != nullptr && Objects[i] == obj) return true;
-	return false;
+	auto it = find(Objects.begin(), Objects.end(), obj);
+	return it != Objects.end();
 }
 
 void GameObject::Draw()
 {
-	Iterator it(Objects, MaxAllocSize);
-	GameObject* obj = nullptr;
-	while ((obj = it.getNext()) != it.end()) {
+	for (auto obj : Objects)
+	{
 		obj->internalDraw();
 	}
 }
 
 void GameObject::Update()
 {
-	Iterator it(Objects, MaxAllocSize);
-	GameObject* obj = nullptr;
-	while ((obj = it.getNext()) != it.end()) {
+	for (auto obj : Objects)
 		obj->internalUpdate();
+	
+	for (auto obj : Objects)
+	{
+		if (obj->isAlive() == true) continue;
+		delete obj;
 	}
 
-	// remove dying objects
-	for (int i = 0; i < MaxAllocSize; i++)
+	Objects.erase(remove_if(Objects.begin(), Objects.end(),
+		[](auto obj) 
+		{
+			return obj->isAlive() == false;
+		}), 
+		Objects.end());
+
+	while (PendingObjects.empty() == false)
 	{
-		if (Objects[i] == nullptr) continue;
-
-		if (Objects[i]->isAlive() == true) continue;
-
-		delete Objects[i];
-		Objects[i] = nullptr;
+		auto back = PendingObjects.back();
+		PendingObjects.pop_back();
+		Objects.push_back(back);
 	}
 }
 
 void GameObject::ProcessInput(int ch)
 {
-	Iterator it(Objects, MaxAllocSize);
-	GameObject* obj = nullptr;
-	while ((obj = it.getNext()) != it.end()) {
+	for (auto obj : Objects)
 		obj->processInput(ch);
-	}
 }
 
 GameObject* GameObject::FindClosestTarget(const GameObject* source, const char* target_tag)
@@ -151,9 +134,7 @@ GameObject* GameObject::FindClosestTarget(const GameObject* source, const char* 
 
 	int closestDistance = 0;
 
-	Iterator it(GameObject::Objects, GameObject::MaxAllocSize);
-	GameObject* obj = nullptr;
-	while ((obj = it.getNext()) != it.end()) {
+	for(auto obj: Objects) {
 		if (strcmp(target_tag, "enemy") == 0 && dynamic_cast<Enemy*>(obj) == nullptr) continue;
 		if (strcmp(target_tag, "player") == 0 && dynamic_cast<Player*>(obj) == nullptr) continue;
 

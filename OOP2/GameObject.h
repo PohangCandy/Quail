@@ -26,6 +26,7 @@ protected:
 
 	//static GameObject** Objects;
 	static vector<GameObject*> Objects;
+	static vector<GameObject*> PendingObjects;
 	static int MaxAllocSize;
 
 	//GameObject** children;
@@ -34,21 +35,18 @@ protected:
 
 	void addChild(GameObject* child)
 	{
-		for (int i = 0; i < maxChildren; i++)
-		{
-			if (children[i] != nullptr) continue;
-			children[i] = child;
-			return;
-		}
+		children.push_back(child);
 	}
 
 	void internalUpdate()
 	{
 		if (isAlive() == false) return;
 		update();
-		for (int i = 0; i < maxChildren && isAlive() == true; i++) {
-			if (children[i] == nullptr) continue;
-			children[i]->internalUpdate();
+		for (auto child : children)
+		{
+			//살아 있을때만 업데이트 수행하기
+			if (isAlive() == false) continue;
+			child->internalUpdate();
 		}
 	}
 
@@ -56,9 +54,10 @@ protected:
 	{
 		if (isAlive() == false) return;
 		draw();
-		for (int i = 0; i < maxChildren && isAlive() == true; i++) {
-			if (children[i] == nullptr) continue;
-			children[i]->draw();
+		for (auto it = children.begin(); it != children.end(); it++)
+		{
+			if (isAlive() == false) continue;
+			(*it)->draw();
 		}
 	}
 
@@ -76,24 +75,16 @@ public:
 	static void Update();
 	static void ProcessInput(int key);
 
-	GameObject(const char* str, int pos)
-		: canvas(Canvas::GetInstance()),		
-		shape(nullptr), pos(pos), alive(true), direction(Direction::None),
-		maxChildren(10)
-	{
-		for (int i = 0; i < maxChildren; i++)
-			children.push_back(nullptr);
-
-		setShape(str);
-	}
+	GameObject(const char* str, int pos);
 
 	virtual ~GameObject()
 	{
-		for (int i = 0; i < maxChildren; i++) {
-			if (children[i] == nullptr) continue;
-			delete children[i];
+		while (children.empty() == false)
+		{
+			auto chlid = children.back();
+			children.pop_back();
+			delete chlid;
 		}
-		children.clear();
 
 		if (this->shape != nullptr)
 			delete[] this->shape;
@@ -156,7 +147,7 @@ public:
 
 	virtual void draw() const;
 
-	virtual void update() {};
+	virtual void update() {}
 
 	virtual void processInput(int key) {}
 };

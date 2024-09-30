@@ -22,9 +22,8 @@ using namespace std;
 
 int main()
 {
-	GameObject::Init(30);
-
 	Canvas* canvas = Canvas::GetInstance();
+	GameObject::Init(30);
 
 	bool exit_flag{ false };
 

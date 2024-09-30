@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "IDamageable.h"
-#include "Iterator.h"
+//#include "Iterator.h"
 
 class TextUI;
 
