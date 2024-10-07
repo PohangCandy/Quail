@@ -6,20 +6,16 @@
 #include "Canvas.h"
 
 Enemy::Enemy(const char* shape, int pos, float hp, float dpf)
-	: GameObject(shape, pos), hp(hp), dpf(dpf), nRemainingFire(rand() % 30), canvas(GetCanvas())
+	: GameObject(shape, pos), hp(hp), dpf(dpf), nRemainingFire(rand() % 30)
 {
 	addChild(new TextUI(this));
 }
 
 GameObject* Enemy::findPlayer()
 {
-	//auto it = find_if(Objects.begin(), Objects.end(), [](auto obj) {
-	//	return dynamic_cast<Player*>(obj) != nullptr;
-	//	});
-	//if (it == Objects.end()) return nullptr;
-
-	for(auto current : Objects) {
-		if (dynamic_cast<Player*>(current) != nullptr) return current;
+	for (auto obj : Objects) {
+		if (obj == this) continue;
+		if (dynamic_cast<Player*>(obj) != nullptr) return obj;
 	}
 	return nullptr;
 }
@@ -44,12 +40,10 @@ void Enemy::update()
 	int end = getEndPosition();
 
 	// detect any collision and handle the collision.
-	for(auto obj:Objects) {
+	for (auto obj : Objects) {
 		if (obj == this) continue;
 		IDamageable* damageable = dynamic_cast<IDamageable*>(obj);
 		if (damageable == nullptr) continue;
-
-		// found other game object that can be damageable.
 
 		int target_start;
 		int target_end;

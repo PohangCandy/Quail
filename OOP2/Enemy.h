@@ -1,19 +1,16 @@
 #pragma once
 #include "GameObject.h"
 #include "IDamageable.h"
-#include "Iterator.h"
+
 
 class Player;
 class TextUI;
-class Canvas;
 
 class Enemy : public GameObject, public IDamageable {
 	float	hp;
 	float	dpf;
 
 	int		nRemainingFire;
-
-	Canvas* canvas;
 
 	// enemy-related functions
 

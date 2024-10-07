@@ -3,7 +3,7 @@
 #include "Canvas.h"
 
 TextUI::TextUI(GameObject* parent)
-	: GameObject("", 1), parent(parent), hp(0.0f),canvas(GetCanvas()),
+	: GameObject("", 1), parent(parent), hp(0.0f), 
 	n_remaining_frames(60), 
 	damageable(dynamic_cast<IDamageable*>(parent))
 {

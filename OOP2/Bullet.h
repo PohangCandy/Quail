@@ -1,17 +1,15 @@
 #pragma once
 #include "GameObject.h"
-#include "Iterator.h"
 
 class Canvas;
 
 class Bullet : public GameObject {
 
-	Canvas* canvas;
 	bool	penetrable;
 
 public:
 
-	Bullet(bool penetrable = false) : GameObject(nullptr, 0), penetrable(penetrable), canvas(GetCanvas())
+	Bullet(bool penetrable = false) : GameObject(nullptr, 0), penetrable(penetrable)
 	{
 		setDirection(Direction::None);
 	}

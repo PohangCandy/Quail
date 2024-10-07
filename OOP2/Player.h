@@ -1,15 +1,12 @@
 #pragma once
 #include "GameObject.h"
+#include "Canvas.h"
 #include "IDamageable.h"
-//#include "Iterator.h"
 
 class TextUI;
 
-class Canvas;
-
 class Player : public GameObject, public IDamageable {
 
-	Canvas* canvas;
 	float	hp;
 	int		blink_period;
 

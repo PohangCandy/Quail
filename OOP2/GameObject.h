@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Utils.h"
-#include "Canvas.h"
 #include <vector>
+#include <algorithm>
 
 class Canvas;
 
@@ -10,7 +10,7 @@ using namespace std;
 
 class GameObject {
 
-	Canvas* canvas;
+	
 	char* shape;
 	int		pos;
 	bool	alive;
@@ -19,33 +19,26 @@ class GameObject {
 
 protected:
 
-	Canvas* GetCanvas()
-	{
-		return canvas;
-	}
-
-	//static GameObject** Objects;
 	static vector<GameObject*> Objects;
 	static vector<GameObject*> PendingObjects;
-	static int MaxAllocSize;
 
-	//GameObject** children;
+	Canvas* canvas;
+
 	vector<GameObject*> children;
-	int	  maxChildren;
 
 	void addChild(GameObject* child)
 	{
-		children.push_back(child);
+		if (child != nullptr)
+			children.push_back(child);
 	}
 
 	void internalUpdate()
 	{
 		if (isAlive() == false) return;
 		update();
-		for (auto child : children)
-		{
-			//살아 있을때만 업데이트 수행하기
-			if (isAlive() == false) continue;
+		for (auto it = children.begin(); it != children.end(); it++) {
+			auto child = *it;
+			if (child->isAlive() == false) continue;
 			child->internalUpdate();
 		}
 	}
@@ -54,10 +47,9 @@ protected:
 	{
 		if (isAlive() == false) return;
 		draw();
-		for (auto it = children.begin(); it != children.end(); it++)
-		{
-			if (isAlive() == false) continue;
-			(*it)->draw();
+		for (auto child : children) {
+			if (child->isAlive() == false) continue;
+			child->draw();
 		}
 	}
 
@@ -79,11 +71,10 @@ public:
 
 	virtual ~GameObject()
 	{
-		while (children.empty() == false)
-		{
-			auto chlid = children.back();
+		while (children.empty() == false) {
+			auto child = children.back();
+			delete child;
 			children.pop_back();
-			delete chlid;
 		}
 
 		if (this->shape != nullptr)

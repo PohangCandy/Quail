@@ -4,19 +4,16 @@
 #include "Bullet.h"
 
 Player::Player(const char* shape, int pos, float hp)
-	: GameObject(shape, pos), hp(hp), blink_period(-1),canvas(GetCanvas())
+	: GameObject(shape, pos), hp(hp), blink_period(-1)
 {
 	addChild(new TextUI(this));
 }
 
 void Player::update()
 {
-	for(auto obj:Objects) {
-
-		// be careful the following is not obj->isAlive() == false
-
+	for (auto obj: Objects ) {
+	
 		if (this->isAlive() == false) break;
-
 		if (obj == this) continue;
 
 		IDamageable* damageable = dynamic_cast<IDamageable*>(obj);
@@ -34,8 +31,6 @@ void Player::update()
 
 void Player::fireBullet()
 {
-	if (canvas == nullptr) return;
-
 	if (GameObject::HasAnEmptySlot() == false) return;
 
 	Bullet* bullet = new Bullet(true);

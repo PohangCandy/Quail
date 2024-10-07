@@ -16,22 +16,30 @@
 #include "Enemy.h"
 #include "Bullet.h"
 #include "TextUI.h"
-
+#include "InputManager.h"
 
 using namespace std;
 
 int main()
 {
-	Canvas* canvas = Canvas::GetInstance();
+	Borland::Initialize();
+	InputManager inputManager;
+
+	auto canvas = Canvas::GetInstance();
 	GameObject::Init(30);
+
+	Borland::GotoXY(1, 1);
+
+	cout << "hello world";
+
+	int x = Borland::WhereX();
+	int y = Borland::WhereY();
 
 	bool exit_flag{ false };
 
 
 	while (exit_flag == false) { // if player is alive
 
-		// GameObject에서 init으로 만든 
-		// canvas의 clear매서드를 어떻게 호출할까
 		canvas->clear();
 
 		/* process game logic for each game object */

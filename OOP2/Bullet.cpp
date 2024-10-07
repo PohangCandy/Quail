@@ -17,7 +17,7 @@ void Bullet::update()
 	bool collided = false;
 	int max_jump = 1;
 
-	for(auto obj: Objects) {
+	for ( auto obj : Objects) {
 		if (obj == this) continue;
 
 		IDamageable* damageable = dynamic_cast<IDamageable*>(obj);

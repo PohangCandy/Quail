@@ -9,7 +9,6 @@ class TextUI : public GameObject {
 	IDamageable* damageable;
 	float	hp;
 	int		n_remaining_frames;
-	Canvas* canvas;
 
 public:
 	TextUI(GameObject* parent);

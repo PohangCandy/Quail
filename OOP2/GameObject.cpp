@@ -2,16 +2,14 @@
 #include "Canvas.h"
 #include "Player.h"
 #include "Enemy.h"
-#include "Iterator.h"
+
 
 vector<GameObject*> GameObject::Objects;
 vector<GameObject*> GameObject::PendingObjects;
-int GameObject::MaxAllocSize = 0;
 
 GameObject::GameObject(const char* str, int pos)
 	: canvas(Canvas::GetInstance()),
-	shape(nullptr), pos(pos), alive(true), direction(Direction::None)	
-{
+	shape(nullptr), pos(pos), alive(true), direction(Direction::None) {
 	setShape(str);
 }
 
@@ -28,52 +26,40 @@ void GameObject::draw() const {
 	}
 }
 
-
-
 void GameObject::Init(int size = 10)
 {
-	Canvas* canvas = Canvas::GetInstance();
-	
 	Add(new Player{ "(^_^)", 0, 10000.0f });
-	Add(new Enemy{ "(+*_*)", 20, 50.0f, 10.0f / canvas->getFrameRate() });
-	Add(new Enemy{ "(+*_*+)", 60, 50.0f, 10.0f / canvas->getFrameRate() });
+	Add(new Enemy{ "(+*_*)", 20, 50.0f, 10.0f / Canvas::GetInstance()->getFrameRate() });
+	Add(new Enemy{ "(+*_*+)", 60, 50.0f, 10.0f / Canvas::GetInstance()->getFrameRate() });
 }
 
 void GameObject::Destroy()
 {
-	while (Objects.empty() == false)
-	{
-		auto back = Objects.back();
+	while (PendingObjects.empty() == false) {
+		auto obj = PendingObjects.back();
+		delete obj;
+		PendingObjects.pop_back();
+	}
+	while (Objects.empty() == false) {
+		auto obj = Objects.back();
+		delete obj;
 		Objects.pop_back();
-		delete back;
 	}
 
-	Objects.clear();
 }
 
 void GameObject::Add(GameObject* obj)
 {
 	if (obj == nullptr) return;
-
-	// 중복된 요소 제거하기
-	auto it = find(Objects.begin(), Objects.end(), obj);
-	if (it != Objects.end()) return;
-
-	Objects.push_back(obj);
+	PendingObjects.push_back(obj);
 }
 
 void GameObject::Remove(GameObject* obj)
 {
-	if (obj == nullptr) return;
-
 	auto it = find(Objects.begin(), Objects.end(), obj);
-	if (it == Objects.end()) return;
-
-	auto target = *it;
-	Objects.erase(it);
-	// erase는 포인터 정보만 날려주는 것이다.
-	//동적해제는 사용자가 해주어야 한다.
-	delete target;
+	if (it != Objects.end())
+		Objects.erase(it);
+	delete obj;
 }
 
 bool GameObject::HasAnEmptySlot()
@@ -83,41 +69,42 @@ bool GameObject::HasAnEmptySlot()
 
 bool GameObject::Contains(GameObject* obj)
 {
-	auto it = find(Objects.begin(), Objects.end(), obj);
-	return it != Objects.end();
+	auto it = find(Objects.cbegin(), Objects.cend(), obj);
+	return it != Objects.cend();
 }
 
 void GameObject::Draw()
 {
 	for (auto obj : Objects)
-	{
 		obj->internalDraw();
-	}
 }
 
 void GameObject::Update()
 {
-	for (auto obj : Objects)
+	int i = 0;
+	for (auto obj : Objects) {
 		obj->internalUpdate();
-	
-	for (auto obj : Objects)
-	{
-		if (obj->isAlive() == true) continue;
-		delete obj;
+		i++;
 	}
 
-	Objects.erase(remove_if(Objects.begin(), Objects.end(),
-		[](auto obj) 
-		{
-			return obj->isAlive() == false;
-		}), 
-		Objects.end());
-
-	while (PendingObjects.empty() == false)
+	// remove dying objects
+	for (auto it = Objects.begin(); it != Objects.end(); )
 	{
-		auto back = PendingObjects.back();
+		auto obj = *it;
+		if (obj->isAlive()) {
+			it++;
+			continue;
+		}
+
+		delete obj;
+		it = Objects.erase(it);
+	}
+
+	// add pending objects to regular objects
+	while (PendingObjects.empty() == false) {
+		auto obj = PendingObjects.back();
 		PendingObjects.pop_back();
-		Objects.push_back(back);
+		Objects.push_back(obj);
 	}
 }
 
@@ -134,10 +121,9 @@ GameObject* GameObject::FindClosestTarget(const GameObject* source, const char* 
 
 	int closestDistance = 0;
 
-	for(auto obj: Objects) {
+	for (auto obj : Objects) {
 		if (strcmp(target_tag, "enemy") == 0 && dynamic_cast<Enemy*>(obj) == nullptr) continue;
-		if (strcmp(target_tag, "player") == 0 && dynamic_cast<Player*>(obj) == nullptr) continue;
-
+		if (strcmp(target_tag, "player") == 0 && dynamic_cast<Player*>(obj) == nullptr) continue;	
 		if (closest == nullptr) {
 			closest = obj;
 			closestDistance = abs(source->getPos() - closest->getPos());

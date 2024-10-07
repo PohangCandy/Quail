@@ -114,7 +114,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions); _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -144,7 +144,6 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="IDamageable.cpp" />
-    <ClCompile Include="Iterator.cpp" />
     <ClCompile Include="OOP2.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="TextUI.cpp" />
@@ -156,7 +155,6 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="IDamageable.h" />
-    <ClInclude Include="Iterator.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="TextUI.h" />
     <ClInclude Include="Utils.h" />
