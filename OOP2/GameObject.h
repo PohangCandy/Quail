@@ -14,8 +14,8 @@ class GameObject {
 	char* shape;
 	int		pos;
 	bool	alive;
-
 	Direction	direction;
+
 
 protected:
 

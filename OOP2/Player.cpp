@@ -6,7 +6,8 @@
 Player::Player(const char* shape, int pos, float hp)
 	: GameObject(shape, pos), hp(hp), blink_period(-1)
 {
-	addChild(new TextUI(this));
+	//addChild(new TextUI(this));
+	Add(new TextUI(this));
 }
 
 void Player::update()

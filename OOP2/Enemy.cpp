@@ -8,7 +8,8 @@
 Enemy::Enemy(const char* shape, int pos, float hp, float dpf)
 	: GameObject(shape, pos), hp(hp), dpf(dpf), nRemainingFire(rand() % 30)
 {
-	addChild(new TextUI(this));
+	//addChild(new TextUI(this));
+	Add(new TextUI(this));
 }
 
 GameObject* Enemy::findPlayer()
