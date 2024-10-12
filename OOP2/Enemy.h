@@ -7,6 +7,7 @@ class Player;
 class TextUI;
 
 class Enemy : public GameObject, public IDamageable {
+	TextUI* text;
 	float	hp;
 	float	dpf;
 
@@ -20,8 +21,7 @@ public:
 
 	Enemy(const char* shape, int pos, float hp, float dpf);
 
-	~Enemy()
-	{}
+	~Enemy();
 
 	void move(int inc)
 	{

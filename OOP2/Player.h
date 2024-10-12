@@ -7,6 +7,7 @@ class TextUI;
 
 class Player : public GameObject, public IDamageable {
 
+	TextUI* text;
 	float	hp;
 	int		blink_period;
 
@@ -14,8 +15,7 @@ public:
 
 	Player(const char* shape, int pos, float hp);
 
-	~Player()
-	{}
+	~Player();
 
 
 	float getHealth() const override { return hp; }

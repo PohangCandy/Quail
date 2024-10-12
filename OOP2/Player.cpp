@@ -7,7 +7,13 @@ Player::Player(const char* shape, int pos, float hp)
 	: GameObject(shape, pos), hp(hp), blink_period(-1)
 {
 	//addChild(new TextUI(this));
-	Add(new TextUI(this));
+	text = new TextUI(this);
+	Add(text);
+}
+
+Player::~Player()
+{
+	text->setDead();
 }
 
 void Player::update()
