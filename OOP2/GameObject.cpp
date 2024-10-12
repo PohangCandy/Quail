@@ -29,7 +29,7 @@ void GameObject::draw() const {
 void GameObject::Init(int size = 10)
 {
 	Player* p1 = new Player{ "(^_^)", 0, 10000.0f };
-	Enemy* e1 = new Enemy{ "(+*_*)", 20, 50.0f, 10.0f / Canvas::GetInstance()->getFrameRate() };
+	Enemy* e1 = new Enemy{ "(+*_*)", 20, 5.0f, 10.0f / Canvas::GetInstance()->getFrameRate() };
 	Enemy* e2 = new Enemy{ "(+*_*+)", 60, 50.0f, 10.0f / Canvas::GetInstance()->getFrameRate() };
 	//TextUI* t1 = new TextUI{ p1 };
 	//TextUI* t2 = new TextUI{ e1 };
